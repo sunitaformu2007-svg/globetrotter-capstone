@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GlobeTrotter — Plan your next trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="paper-texture">
+
+<div id="site-nav"></div>
+
+<header class="hero">
+  <div class="container">
+    <div>
+      <span class="eyebrow">Distributed Systems Capstone · Phase 1</span>
+      <h1>Your next trip, planned like a journey — not a spreadsheet.</h1>
+      <p class="lede">
+        GlobeTrotter recommends destinations based on what you actually like, then helps
+        you turn them into a real itinerary you can share with the people you're traveling with.
+      </p>
+      <div class="hero-cta">
+        <a href="register.html" class="btn btn-primary">Start planning — it's free</a>
+        <a href="destinations.html" class="btn btn-ghost">Browse destinations</a>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat"><span class="num">16</span><span class="label">Destinations, 6 categories</span></div>
+        <div class="stat"><span class="num">24/7</span><span class="label">Available worldwide</span></div>
+        <div class="stat"><span class="num">v1</span><span class="label">Monolith · Phase 1</span></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Signature illustration: a dotted flight route between four cities -->
+      <svg class="route-art" viewBox="0 0 460 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dotted flight route connecting four cities">
+        <path class="path" d="M70,80 C160,45 250,95 390,115 C 330,180 300,190 100,255 C 40,290 230,345 350,305" />
+        <g transform="translate(390,115) rotate(35)">
+          <path d="M0,-7 L6,6 L0,3 L-6,6 Z" fill="var(--brass)" />
+        </g>
+        <circle class="dot" cx="70" cy="80" r="6"></circle>
+        <text class="label" x="84" y="76">REYKJAVÍK</text>
+        <text class="label" x="84" y="90" opacity="0.7">64.1°N</text>
+
+        <circle class="dot-brass" cx="390" cy="115" r="6"></circle>
+        <text class="label" x="330" y="103">KYOTO</text>
+        <text class="label" x="330" y="140" opacity="0.7">35.0°N</text>
+
+        <circle class="dot" cx="100" cy="255" r="6"></circle>
+        <text class="label" x="18" y="248">CUSCO</text>
+        <text class="label" x="18" y="278" opacity="0.7">13.5°S</text>
+
+        <circle class="dot-brass" cx="350" cy="305" r="6"></circle>
+        <text class="label" x="290" y="330">CAPE TOWN</text>
+        <text class="label" x="290" y="345" opacity="0.7">33.9°S</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">How it works</span>
+        <h2>Three steps, in order</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="index">01 — Tell us your interests</span>
+        <h3>Set your preferences</h3>
+        <p>Pick the kinds of trips you like — beach, mountain, culture, adventure — when you sign up.</p>
+      </div>
+      <div class="step">
+        <span class="index">02 — Get matched</span>
+        <h3>See personal recommendations</h3>
+        <p>Your dashboard ranks destinations against your preferences, not a generic "top 10".</p>
+      </div>
+      <div class="step">
+        <span class="index">03 — Build the trip</span>
+        <h3>Create an itinerary</h3>
+        <p>Turn a destination into dates, notes and a status you can track from planned to completed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Browse</span>
+        <h2>Popular right now</h2>
+      </div>
+      <a href="destinations.html" class="btn btn-ghost btn-sm">View all destinations</a>
+    </div>
+    <div id="preview-grid" class="pass-grid">
+      <div class="skeleton" style="height:220px"></div>
+      <div class="skeleton" style="height:220px"></div>
+      <div class="skeleton" style="height:220px"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <span>GlobeTrotter Travel Assistant — Phase 1: The Monolith</span>
+    <span>ICT University · CS Capstone</span>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+  renderNav("");
+
+  async function loadPreview() {
+    const grid = document.getElementById("preview-grid");
+    try {
+      const data = await Api.searchDestinations();
+      const top = data.results.slice(0, 3);
+      grid.innerHTML = top.map(cardHtml).join("");
+    } catch (err) {
+      grid.innerHTML = `<div class="empty-state"><h3>Server not reachable</h3><p>${escapeHtml(err.message)}</p></div>`;
+    }
+  }
+
+  function cardHtml(d) {
+    return `
+      <article class="pass-card">
+        <div class="pass-main">
+          <img class="pass-photo" src="${destPhotoUrl(d)}" alt="${escapeHtml(d.name)}" loading="lazy" />
+          <h3 class="pass-dest">${escapeHtml(d.name)}</h3>
+          <span class="pass-country">${escapeHtml(d.country)}</span>
+          <p class="pass-desc">${escapeHtml(d.description)}</p>
+          <div class="pass-meta"><span><strong>$${d.avg_cost_usd}</strong>/day avg</span><span>${escapeHtml(d.best_season)}</span></div>
+        </div>
+        <div class="pass-stub">
+          <div class="stamp-badge"><span class="rating">${d.rating}</span><span class="rating-label">RATING</span></div>
+          <span class="pass-category">${escapeHtml(d.category)}</span>
+        </div>
+      </article>`;
+  }
+
+  loadPreview();
+</script>
+</body>
+</html>

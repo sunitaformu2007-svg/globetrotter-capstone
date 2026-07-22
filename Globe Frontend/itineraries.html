@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Itineraries — GlobeTrotter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="paper-texture">
+
+<div id="site-nav"></div>
+
+<header class="section" style="padding-bottom:0;">
+  <div class="container section-head">
+    <div>
+      <span class="eyebrow">Trip planning</span>
+      <h1>My itineraries</h1>
+      <p class="muted">Every trip you've planned, tracked from idea to boarding.</p>
+    </div>
+    <button class="btn btn-primary" id="new-itin-btn">+ New itinerary</button>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div id="itin-alert"></div>
+    <div id="itin-grid" class="pass-grid">
+      <div class="skeleton" style="height:220px"></div>
+      <div class="skeleton" style="height:220px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Create / edit modal -->
+<div class="modal-overlay" id="itin-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-title" style="margin:0;">New itinerary</h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div id="modal-alert"></div>
+    <form id="itin-form" novalidate>
+      <input type="hidden" id="itin-id" />
+      <div class="field">
+        <label for="title">Trip title</label>
+        <input type="text" id="title" required placeholder="e.g. Summer in the Alps" />
+      </div>
+      <div class="field">
+        <label for="destination">Destination</label>
+        <select id="destination" required></select>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label for="start_date">Start date</label>
+          <input type="date" id="start_date" required />
+        </div>
+        <div class="field">
+          <label for="end_date">End date</label>
+          <input type="date" id="end_date" required />
+        </div>
+      </div>
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="planned">Planned</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="notes">Notes</label>
+        <textarea id="notes" placeholder="Flights, who's coming, things to book…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="save-btn">Save itinerary</button>
+    </form>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <span>GlobeTrotter Travel Assistant — Phase 1: The Monolith</span>
+    <span>ICT University · CS Capstone</span>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/itineraries.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create account — GlobeTrotter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="paper-texture">
+
+<div id="site-nav"></div>
+
+<main class="auth-shell">
+  <div class="auth-card">
+    <span class="eyebrow">Get started</span>
+    <h1>Create your account</h1>
+    <p class="muted">Tell us what kind of trips you like so recommendations are actually useful.</p>
+
+    <div id="form-alert"></div>
+
+    <form id="register-form" novalidate>
+      <div class="field">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="new-password" minlength="6" required />
+        <p class="field-hint">At least 6 characters.</p>
+      </div>
+      <div class="field">
+        <label>Trip interests <span class="muted">(pick any)</span></label>
+        <div class="pref-grid" id="pref-grid">
+          <div class="pref-option" data-value="beach">Beach</div>
+          <div class="pref-option" data-value="mountain">Mountain</div>
+          <div class="pref-option" data-value="city">City</div>
+          <div class="pref-option" data-value="culture">Culture</div>
+          <div class="pref-option" data-value="adventure">Adventure</div>
+          <div class="pref-option" data-value="nature">Nature</div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Create account</button>
+    </form>
+
+    <p class="auth-switch muted">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+<script>
+  renderNav("");
+  if (Auth.isLoggedIn()) window.location.href = "dashboard.html";
+
+  const selected = new Set();
+  document.querySelectorAll(".pref-option").forEach((el) => {
+    el.addEventListener("click", () => {
+      const v = el.dataset.value;
+      if (selected.has(v)) { selected.delete(v); el.classList.remove("active"); }
+      else { selected.add(v); el.classList.add("active"); }
+    });
+  });
+
+  const form = document.getElementById("register-form");
+  const alertBox = document.getElementById("form-alert");
+  const submitBtn = document.getElementById("submit-btn");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    alertBox.innerHTML = "";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating account…";
+
+    try {
+      const { token, user } = await Api.register({
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        password: form.password.value,
+        preferences: Array.from(selected),
+      });
+      Auth.setSession(token, user);
+      window.location.href = "dashboard.html";
+    } catch (err) {
+      alertBox.innerHTML = `<div class="alert alert-error">${escapeHtml(err.message)}</div>`;
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Create account";
+    }
+  });
+</script>
+</body>
+</html>
