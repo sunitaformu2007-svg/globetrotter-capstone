@@ -73,8 +73,8 @@ def public_user(user):
 def issue_token(user_id):
     payload = {
         "sub": user_id,
-        "iat": datetime.datetime.utcnow(),
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(days=TOKEN_EXPIRY_DAYS),
+        "iat": datetime.datetime.now(datetime.timezone.utc),
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=TOKEN_EXPIRY_DAYS),
     }
     return jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
 
@@ -124,10 +124,11 @@ def register():
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
+    home_base = (data.get("home_base") or data.get("location") or "").strip()
     preferences = data.get("preferences") or []
 
-    if not name or not email or not password:
-        return jsonify({"error": "name, email and password are required"}), 400
+    if not name or not email or not password or not home_base:
+        return jsonify({"error": "name, email, location and password are required"}), 400
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters"}), 400
     if not isinstance(preferences, list):
@@ -143,8 +144,8 @@ def register():
         "email": email,
         "password_hash": generate_password_hash(password),
         "preferences": preferences,
-        "home_base": data.get("home_base", ""),
-        "created_at": datetime.datetime.utcnow().isoformat(),
+        "home_base": home_base,
+        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
     db["users"].append(user)
     db["next_user_id"] += 1
@@ -310,8 +311,8 @@ def create_itinerary():
         "end_date": end_date,
         "notes": data.get("notes", ""),
         "status": data.get("status") if data.get("status") in VALID_STATUSES else "planned",
-        "created_at": datetime.datetime.utcnow().isoformat(),
-        "updated_at": datetime.datetime.utcnow().isoformat(),
+        "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
     db["itineraries"].append(itinerary)
     db["next_itinerary_id"] += 1
@@ -373,7 +374,7 @@ def update_itinerary(itinerary_id):
     if itinerary["start_date"] > itinerary["end_date"]:
         return jsonify({"error": "start_date must be before end_date"}), 400
 
-    itinerary["updated_at"] = datetime.datetime.utcnow().isoformat()
+    itinerary["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     save_db(db)
     return jsonify(_itinerary_with_destination(itinerary, db)), 200
 

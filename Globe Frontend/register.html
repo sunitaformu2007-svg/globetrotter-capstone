@@ -30,6 +30,10 @@
         <input type="email" id="email" name="email" autocomplete="email" required />
       </div>
       <div class="field">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" autocomplete="address-level2" placeholder="e.g. Douala" value="Douala" required />
+      </div>
+      <div class="field">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" autocomplete="new-password" minlength="6" required />
         <p class="field-hint">At least 6 characters.</p>
@@ -81,6 +85,7 @@
       const { token, user } = await Api.register({
         name: form.name.value.trim(),
         email: form.email.value.trim(),
+        home_base: form.location.value.trim(),
         password: form.password.value,
         preferences: Array.from(selected),
       });
