@@ -1,0 +1,109 @@
+HOW TO ADD PHOTOS — NO CODE EDITING REQUIRED
+==============================================
+
+To give any place a real photo, just save an image file into THIS folder
+(client/public/images/) using the EXACT filename listed below for that
+place. That's it — no JSON, no code, nothing else to edit. Refresh your
+browser (Ctrl+Shift+R) after adding a file and the photo appears.
+
+Accepted file types: .jpg, .jpeg, .png, .webp — just match the name before
+the dot; the extension can be any of those four.
+
+If a file isn't there yet, that place just shows a neutral placeholder
+photo — nothing breaks.
+
+--------------------------------------------------
+YOUR 7 REQUESTED RESTAURANTS
+--------------------------------------------------
+Le Paquebot                          -> le-paquebot-douala.jpg
+Saga Africa Restaurant               -> saga-africa-douala.jpg
+Le Boj                               -> le-boj-douala.jpg
+Le Grilladin                         -> le-grilladin-douala.jpg
+La Pizzeria Douala                   -> la-pizzeria-douala.jpg
+Bombay Masala                        -> bombay-masala-douala.jpg
+White House Restaurant               -> white-house-douala.jpg
+
+--------------------------------------------------
+OTHER RESTAURANTS
+--------------------------------------------------
+La Fourchette                        -> la-fourchette-douala.jpg
+Le Dernier Comptoir Colonial         -> dernier-comptoir-douala.jpg
+
+--------------------------------------------------
+CAFES
+--------------------------------------------------
+La Cubaine by Gironde                 -> la-cubaine-douala.jpg
+European-style Patisserie             -> patisserie-liberte-douala.jpg
+
+--------------------------------------------------
+NIGHTLIFE
+--------------------------------------------------
+One Rooftop                          -> one-rooftop-douala.jpg
+Lounge n Garden                      -> lounge-garden-douala.jpg
+Bubble Bar                           -> bubble-bar-douala.jpg
+Makako Beach Bar                     -> makako-beach-bar-douala.jpg
+Sanza Night Club                     -> sanza-night-club-douala.jpg
+
+--------------------------------------------------
+HOTELS
+--------------------------------------------------
+Akwa Palace Douala                   -> akwa-palace-douala.jpg
+Krystal Palace Douala                -> krystal-palace-douala.jpg
+ONOMO Hotel Douala                   -> onomo-douala.jpg
+Hotel Résidence La Falaise           -> la-falaise-douala.jpg
+ibis Douala                          -> ibis-douala.jpg
+
+--------------------------------------------------
+CULTURE  (4 of these already have real photos built in!)
+--------------------------------------------------
+Doual'Art                            -> doual-art-douala.jpg
+Douala Maritime Museum               -> maritime-museum-douala.jpg          [already has a photo]
+Cathedral of St Peter and Paul       -> cathedral-bonadibong-douala.jpg     [already has a photo]
+La Nouvelle Liberté                  -> nouvelle-liberte-douala.jpg        [already has a photo]
+Bonanjo Historic District            -> bonanjo-district-douala.jpg        [already has a photo]
+
+--------------------------------------------------
+MARKETS
+--------------------------------------------------
+Marché Central                       -> marche-central-douala.jpg
+Rue de la Colombe                    -> rue-colombe-douala.jpg
+Eko Market                           -> eko-market-douala.jpg
+
+--------------------------------------------------
+NATURE
+--------------------------------------------------
+Parc Bonanjo (Jama Park)             -> jama-park-douala.jpg
+Wouri River Boardwalk                -> wouri-boardwalk-douala.jpg
+
+--------------------------------------------------
+TRANSPORTATION
+--------------------------------------------------
+Douala International Airport (DLA)   -> dla-airport-douala.jpg
+Shared (yellow) taxis                -> shared-taxi-douala.jpg
+Moto-taxis (bendskin)                -> moto-taxi-douala.jpg
+TAXIQO Airport & City Transfers      -> taxiqo-douala.jpg
+SOCATUR City Buses                   -> socatur-bus-douala.jpg
+Gare Routière                        -> gare-routiere-douala.jpg
+
+--------------------------------------------------
+EMERGENCY
+--------------------------------------------------
+National Emergency Line              -> emergency-general-douala.jpg
+Police                               -> police-douala.jpg
+Fire Brigade                         -> fire-brigade-douala.jpg
+Gendarmerie                          -> gendarmerie-douala.jpg
+Laquintinie Hospital                 -> laquintinie-hospital-douala.jpg
+Douala General Hospital              -> general-hospital-douala.jpg
+U.S. Embassy Branch Office           -> us-embassy-douala.jpg
+
+--------------------------------------------------
+HOW TO SAVE A PHOTO FROM GOOGLE MAPS
+--------------------------------------------------
+1. Search the place name on Google Maps
+2. Click its listing, then click its Photos
+3. Right-click a photo -> "Save image as..."
+4. In the filename box, type the exact name from the list above
+   (e.g. le-paquebot-douala) and save it into THIS folder
+5. Refresh your browser (Ctrl+Shift+R)
+
+Done. No code, no JSON editing.
