@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { createUser, findUserByEmail, findUserById, publicUser } from "../utils/db.js";
 import { signToken, requireAuth } from "../middleware/auth.js";
+import { logEvent } from "../utils/analytics.js";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ router.post("/register", async (req, res) => {
   if (password.length < 6) {
     return res.status(400).json({ error: "Password must be at least 6 characters" });
   }
-  if (findUserByEmail(cleanEmail)) {
+  if (await findUserByEmail(cleanEmail)) {
     return res.status(409).json({ error: "An account with that email already exists" });
   }
 
@@ -32,14 +33,16 @@ router.post("/register", async (req, res) => {
   });
 
   const token = signToken(user);
-  res.status(201).json({ token, user: publicUser(user) });
+  const pub = publicUser(user);
+  logEvent("register", { userId: pub.id, userEmail: pub.email, meta: { location: cleanLocation, preferences } });
+  res.status(201).json({ token, user: pub });
 });
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body || {};
   const cleanEmail = (email || "").trim().toLowerCase();
 
-  const user = findUserByEmail(cleanEmail);
+  const user = await findUserByEmail(cleanEmail);
   if (!user) {
     return res.status(401).json({ error: "Invalid email or password" });
   }
@@ -49,11 +52,13 @@ router.post("/login", async (req, res) => {
   }
 
   const token = signToken(user);
-  res.json({ token, user: publicUser(user) });
+  const pub = publicUser(user);
+  logEvent("login", { userId: pub.id, userEmail: pub.email });
+  res.json({ token, user: pub });
 });
 
-router.get("/me", requireAuth, (req, res) => {
-  const user = findUserById(req.userId);
+router.get("/me", requireAuth, async (req, res) => {
+  const user = await findUserById(req.userId);
   if (!user) return res.status(404).json({ error: "User not found" });
   res.json({ user: publicUser(user) });
 });

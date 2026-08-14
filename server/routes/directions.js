@@ -2,13 +2,7 @@ import { Router } from "express";
 
 const router = Router();
 
-// OSRM's public demo server is free and needs no API key. It's rate-limited
-// and not meant for heavy production traffic — swap in Google Directions API
-// or your own OSRM instance when you're ready to scale.
 const OSRM_BASE = "https://router.project-osrm.org/route/v1";
-
-// Rough Douala taxi pricing model for the fare estimator (informal "course"
-// taxis are usually negotiated, not metered — treat this as a ballpark).
 const BASE_FARE_FCFA = 300;
 const PER_KM_FCFA = 250;
 

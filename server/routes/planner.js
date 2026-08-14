@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { PLACES } from "./places.js";
+import { optionalAuth } from "../middleware/auth.js";
+import { logEvent } from "../utils/analytics.js";
 
 const router = Router();
 
@@ -13,7 +15,7 @@ const INTEREST_TO_CATEGORY = {
   adventure: "nature",
 };
 
-router.post("/", (req, res) => {
+router.post("/", optionalAuth, (req, res) => {
   const { budget_fcfa, days, interests } = req.body || {};
 
   const numDays = Math.max(1, Math.min(14, Number(days) || 3));
@@ -47,7 +49,6 @@ router.post("/", (req, res) => {
     const lunch = restaurants[restaurantCursor % restaurants.length];
     restaurantCursor += 1;
 
-    // Rough taxi-hop estimate: ~1500 FCFA per stop, 3 stops/day average.
     estimatedTransportFcfa += 1500 * 3;
 
     itinerary.push({
@@ -57,6 +58,12 @@ router.post("/", (req, res) => {
       afternoon: dayActivities[1] || null,
     });
   }
+
+  logEvent("trip_planned", {
+    userId: req.userId,
+    userEmail: req.userEmail,
+    meta: { days: numDays, budget_fcfa: budget_fcfa || null, interests: interests || [] },
+  });
 
   res.json({
     days: numDays,

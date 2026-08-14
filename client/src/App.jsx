@@ -1,10 +1,12 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatWidget from "./components/ChatWidget";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { trackEvent } from "./lib/analytics";
 
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
@@ -18,11 +20,23 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 
+// Logs a lightweight "page_view" event to the backend every time the
+// person navigates to a different page in the app (client-side routing
+// doesn't hit the server on its own, so this fills that gap).
+function PageViewTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    trackEvent("page_view", { path: location.pathname });
+  }, [location.pathname]);
+  return null;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
+          <PageViewTracker />
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">

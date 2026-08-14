@@ -2,9 +2,6 @@ import { Router } from "express";
 
 const router = Router();
 
-// Douala's coordinates. Open-Meteo is free and needs no API key —
-// if you'd rather use OpenWeatherMap, swap the fetch below and read
-// process.env.OPENWEATHER_API_KEY.
 const DOUALA_LAT = 4.0511;
 const DOUALA_LNG = 9.7679;
 
@@ -36,8 +33,6 @@ router.get("/", async (req, res) => {
     });
   } catch (err) {
     console.error("Weather fetch failed:", err.message);
-    // Graceful fallback so the UI never breaks if the network/API is unreachable —
-    // Douala is tropical, so these are reasonable seasonal defaults.
     res.status(200).json({
       source: "fallback",
       current: { temperature_c: 27, humidity_pct: 85, wind_kmh: 12, precipitation_mm: 0 },

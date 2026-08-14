@@ -2,8 +2,9 @@ import { Router } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { findUserById, updateUser, publicUser } from "../utils/db.js";
+import { logEvent } from "../utils/analytics.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PLACES_PATH = path.join(__dirname, "..", "data", "places.json");
@@ -13,9 +14,6 @@ function loadPlaces() {
   try {
     const raw = fs.readFileSync(PLACES_PATH, "utf-8");
     const data = JSON.parse(raw);
-    // Keep the backup in sync with good edits, but only write it when the
-    // content actually changed — writing on every load would trigger the
-    // dev server's file watcher and cause an endless restart loop.
     const backupRaw = fs.existsSync(PLACES_BACKUP_PATH) ? fs.readFileSync(PLACES_BACKUP_PATH, "utf-8") : null;
     const normalized = JSON.stringify(data, null, 2);
     if (backupRaw !== normalized) {
@@ -25,17 +23,13 @@ function loadPlaces() {
   } catch (err) {
     console.error("\n⚠️  server/data/places.json has a mistake in it (probably a missing comma or quote).");
     console.error("   Error detail:", err.message);
-    console.error("   Restoring the last known-good copy so the site keeps working.");
-    console.error("   Open places.json, fix the typo near where the error points, and save again.\n");
+    console.error("   Restoring the last known-good copy so the site keeps working.\n");
     if (fs.existsSync(PLACES_BACKUP_PATH)) {
       const backup = JSON.parse(fs.readFileSync(PLACES_BACKUP_PATH, "utf-8"));
-      // Restore the actual file too, so opening it in an editor shows valid,
-      // working JSON again instead of the broken version.
       fs.writeFileSync(PLACES_PATH, JSON.stringify(backup, null, 2));
-      console.error("   places.json has been automatically restored to the last working version.\n");
       return backup;
     }
-    throw err; // No backup exists yet — nothing safe to fall back to.
+    throw err;
   }
 }
 
@@ -47,7 +41,6 @@ function toRad(deg) {
   return (deg * Math.PI) / 180;
 }
 
-// Haversine distance in kilometers.
 export function distanceKm(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
@@ -58,7 +51,7 @@ export function distanceKm(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-router.get("/", (req, res) => {
+router.get("/", optionalAuth, (req, res) => {
   const { category, q, max_cost, near_lat, near_lng, radius_km } = req.query;
   let results = PLACES;
 
@@ -86,6 +79,14 @@ router.get("/", (req, res) => {
       .map((p) => ({ ...p, distance_km: Number(distanceKm(lat, lng, p.lat, p.lng).toFixed(2)) }))
       .filter((p) => p.distance_km <= radius)
       .sort((a, b) => a.distance_km - b.distance_km);
+  }
+
+  if (q || category) {
+    logEvent("search", {
+      userId: req.userId,
+      userEmail: req.userEmail,
+      meta: { q: q || null, category: category || null, resultCount: results.length },
+    });
   }
 
   res.json({
@@ -131,9 +132,14 @@ router.get("/transportation", (req, res) => {
   res.json({ count: results.length, results });
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", optionalAuth, (req, res) => {
   const place = PLACES.find((p) => p.id === Number(req.params.id));
   if (!place) return res.status(404).json({ error: "Place not found" });
+  logEvent("place_view", {
+    userId: req.userId,
+    userEmail: req.userEmail,
+    meta: { placeId: place.id, placeName: place.name },
+  });
   res.json(place);
 });
 
@@ -144,18 +150,20 @@ router.post("/:id/save", requireAuth, async (req, res) => {
   const place = PLACES.find((p) => p.id === placeId);
   if (!place) return res.status(404).json({ error: "Place not found" });
 
-  const user = findUserById(req.userId);
+  const user = await findUserById(req.userId);
   const saved = new Set(user.saved_places || []);
   saved.add(placeId);
   const updated = await updateUser(req.userId, { saved_places: [...saved] });
+  logEvent("save_place", { userId: req.userId, userEmail: req.userEmail, meta: { placeId, placeName: place.name } });
   res.json({ user: publicUser(updated) });
 });
 
 router.delete("/:id/save", requireAuth, async (req, res) => {
   const placeId = Number(req.params.id);
-  const user = findUserById(req.userId);
+  const user = await findUserById(req.userId);
   const saved = (user.saved_places || []).filter((id) => id !== placeId);
   const updated = await updateUser(req.userId, { saved_places: saved });
+  logEvent("unsave_place", { userId: req.userId, userEmail: req.userEmail, meta: { placeId } });
   res.json({ user: publicUser(updated) });
 });
 
